@@ -2,7 +2,7 @@
 
 A personalized learning management system that builds a structured curriculum for any technical topic. Concept lessons are AI-generated, and research papers are pulled directly from arXiv and embedded with a side AI chat tutor.
 
-Demo video: https://www.loom.com/share/ae5844eb1503457693019773bdcdeeb9
+Demo video: https://www.loom.com/share/06b6ef9c1dc64b48a09177100bc49b33
 
 ## What it does
 
