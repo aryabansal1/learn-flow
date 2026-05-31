@@ -13,7 +13,7 @@ A personalized learning management system that builds a structured curriculum fo
 
 - Node.js 18+
 - Python 3.10+
-- An [Anthropic API key](https://console.anthropic.com) (requires credits — no free tier)
+- An [Anthropic API key](https://console.anthropic.com) (requires credit purchase)
 
 ## Setup
 
@@ -49,7 +49,7 @@ npm run dev
 
 This starts both the frontend (port 5173) and backend (port 8000) together.
 
-Open **http://localhost:5173** in your browser.
+Open **<http://localhost:5173>** in your browser.
 
 ## Usage
 
@@ -57,6 +57,14 @@ Open **http://localhost:5173** in your browser.
 2. LearnFlow generates concept lessons and finds real arXiv papers for the topic
 3. Work through lessons in any order — read, ask questions, mark complete when done
 4. Paper lessons embed the full PDF with an AI chat sidebar that has already read the paper
+
+## How papers are selected
+
+1. **Claude picks the topic** — when generating the curriculum, Claude suggests paper titles and search queries relevant to the topic (e.g. "Attention Is All You Need" for transformers)
+2. **arXiv API finds the real paper** — the backend takes that search query and hits the arXiv API, returning the closest matching real paper with a verified arXiv ID and PDF link
+3. **Google Docs viewer embeds it** — the PDF link is passed to Google Docs viewer which renders it in the page
+
+Claude decides what's relevant, but arXiv decides what actually gets displayed. The paper shown is the top relevance result from arXiv's search engine for Claude's suggested query — meaning it's always a real paper but may not be exactly the one Claude had in mind.
 
 ## Notes
 
