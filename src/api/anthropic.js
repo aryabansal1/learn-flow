@@ -139,13 +139,13 @@ Respond ONLY with valid JSON:
   return JSON.parse(stripJsonFences(text))
 }
 
-export async function sendTutorMessage(paperTitle, arxivId, userMessage, history) {
+export async function sendTutorMessage(paperTitle, arxivId, userMessage, history, abstract = null) {
   const messages = [
     ...history,
     { role: 'user', content: userMessage },
   ]
 
-  const systemPrompt = `You are an expert researcher who has thoroughly read the paper "${paperTitle}"${arxivId ? ` (arXiv:${arxivId})` : ''}.
+  const systemPrompt = `You are an expert researcher who has thoroughly read the paper "${paperTitle}"${arxivId ? ` (arXiv:${arxivId})` : ''}.${abstract ? `\n\nAbstract: ${abstract}` : ''}
 The user is reading this paper right now and will ask you questions as they go.
 Answer concisely and clearly. Explain equations, figures, and jargon in plain language when asked.
 Keep responses focused — the user is mid-read, not looking for a lecture.`

@@ -14,7 +14,8 @@ export default function PaperLesson({ lesson, curriculum, onComplete }) {
 
   const arxivId = lesson.content?.arxivId
   const paperTitle = lesson.content?.arxivTitle || lesson.title
-  const pdfUrl = arxivId ? `https://arxiv.org/pdf/${arxivId}` : null
+  const abstract = lesson.content?.abstract || null
+  const pdfUrl = lesson.content?.pdfLink || (arxivId ? `https://arxiv.org/pdf/${arxivId}` : null)
   const embedUrl = pdfUrl
     ? `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`
     : null
@@ -34,7 +35,7 @@ export default function PaperLesson({ lesson, curriculum, onComplete }) {
     setSending(true)
 
     try {
-      const reply = await sendTutorMessage(paperTitle, arxivId, text, history)
+      const reply = await sendTutorMessage(paperTitle, arxivId, text, history, abstract)
       const assistantMsg = { role: 'assistant', content: reply }
       const finalHistory = [...newHistory, assistantMsg]
       setHistory(finalHistory)

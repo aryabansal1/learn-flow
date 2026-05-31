@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import { useCurriculum } from '../context/CurriculumContext'
 import { generateCurriculum } from '../api/anthropic'
+import { searchArxiv } from '../api/arxiv'
 
 export default function NewCurriculumModal({ onClose }) {
   const navigate = useNavigate()
@@ -26,7 +27,18 @@ export default function NewCurriculumModal({ onClose }) {
       const id = uuidv4()
       const now = new Date().toISOString()
 
-      const lessons = result.lessons.map((l, i) => ({
+      // Search arXiv sequentially — parallel calls get rate limited
+      const rawLessons = result.lessons
+      const arxivMap = {}
+      for (const l of rawLessons.filter(l => l.type === 'paper')) {
+        try {
+          const hit = await searchArxiv(l.arxivQuery || l.arxivTitle || l.title)
+          if (hit) arxivMap[l.title] = hit
+        } catch {}
+        await new Promise(r => setTimeout(r, 4000))
+      }
+
+      const lessons = rawLessons.map((l, i) => ({
         id: uuidv4(),
         type: l.type,
         title: l.title,
@@ -34,7 +46,13 @@ export default function NewCurriculumModal({ onClose }) {
         status: 'active',
         order: i,
         content: {
-          ...(l.type === 'paper' ? { arxivQuery: l.arxivQuery, arxivTitle: l.arxivTitle, arxivId: l.arxivId } : {}),
+          ...(l.type === 'paper' ? {
+            arxivQuery: l.arxivQuery,
+            arxivTitle: arxivMap[l.title]?.title || l.arxivTitle,
+            arxivId: arxivMap[l.title]?.arxivId || null,
+            abstract: arxivMap[l.title]?.abstract || null,
+            pdfLink: arxivMap[l.title]?.pdfLink || null,
+          } : {}),
         },
         tutorHistory: [],
         quiz: { questions: [], userAnswers: [], passed: false, attempts: 0 },
