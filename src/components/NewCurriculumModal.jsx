@@ -11,6 +11,7 @@ export default function NewCurriculumModal({ onClose }) {
   const [name, setName] = useState('')
   const [topic, setTopic] = useState('')
   const [level, setLevel] = useState('beginner')
+  const [paperCount, setPaperCount] = useState(2)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -23,7 +24,7 @@ export default function NewCurriculumModal({ onClose }) {
     setLoading(true)
 
     try {
-      const result = await generateCurriculum(topic, level)
+      const result = await generateCurriculum(topic, level, paperCount)
       const id = uuidv4()
       const now = new Date().toISOString()
 
@@ -107,6 +108,19 @@ export default function NewCurriculumModal({ onClose }) {
               <option value="beginner">Beginner</option>
               <option value="some_background">Some background</option>
               <option value="technical">Technical</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Number of papers</label>
+            <select
+              value={paperCount}
+              onChange={e => setPaperCount(Number(e.target.value))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            >
+              {[1, 2, 3, 4, 5].map(n => (
+                <option key={n} value={n}>{n} paper{n > 1 ? 's' : ''}</option>
+              ))}
             </select>
           </div>
 
