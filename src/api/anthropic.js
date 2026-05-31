@@ -52,22 +52,22 @@ export async function generateCurriculum(topic, level) {
 Student level: ${levelLabel}
 
 Guidelines:
-- Start with 1-2 concept lessons to build intuition
-- Include video lessons in the middle
-- End with 1-2 paper lessons once the student has enough foundation
-- Total lessons: decide based on complexity (typically 5-10)
-- For paper lessons, suggest real arXiv papers
+- Start with 2-3 concept lessons to build intuition and foundational understanding
+- End with 2-3 paper lessons that go deep on the topic with real research
+- No video lessons — only concept and paper types
+- Total lessons: decide based on complexity (typically 5-8)
+- For paper lessons, suggest real arXiv papers with accurate titles
 
 Respond ONLY with valid JSON in this exact format:
 {
   "lessons": [
     {
-      "type": "concept" | "video" | "paper",
+      "type": "concept" | "paper",
       "title": "string",
       "description": "string",
-      "youtubeQuery": "string (video lessons only, omit for others)",
       "arxivQuery": "string (paper lessons only, omit for others)",
-      "arxivTitle": "string (paper lessons only — a real paper title)"
+      "arxivTitle": "string (paper lessons only — a real paper title)",
+      "arxivId": "string (paper lessons only — the arXiv ID, e.g. 1706.03762)"
     }
   ]
 }`
@@ -139,16 +139,16 @@ Respond ONLY with valid JSON:
   return JSON.parse(stripJsonFences(text))
 }
 
-export async function sendTutorMessage(paperTitle, userMessage, history) {
+export async function sendTutorMessage(paperTitle, arxivId, userMessage, history) {
   const messages = [
     ...history,
     { role: 'user', content: userMessage },
   ]
 
-  const systemPrompt = `You are a patient, knowledgeable tutor walking a student through the research paper: "${paperTitle}".
-Walk through the paper section by section in this order: Background & motivation, Key concepts, Methodology, Results, Why it matters.
-Use analogies and plain language. Check for understanding. Answer questions in context.
-When you have covered all sections of the paper, end your message with the phrase: "that covers the full paper"`
+  const systemPrompt = `You are an expert researcher who has thoroughly read the paper "${paperTitle}"${arxivId ? ` (arXiv:${arxivId})` : ''}.
+The user is reading this paper right now and will ask you questions as they go.
+Answer concisely and clearly. Explain equations, figures, and jargon in plain language when asked.
+Keep responses focused — the user is mid-read, not looking for a lecture.`
 
   return callAnthropic(messages, systemPrompt)
 }

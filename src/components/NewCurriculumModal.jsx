@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import { useCurriculum } from '../context/CurriculumContext'
-import { generateCurriculum, generateVideoTakeaways } from '../api/anthropic'
+import { generateCurriculum } from '../api/anthropic'
 
 export default function NewCurriculumModal({ onClose }) {
   const navigate = useNavigate()
@@ -26,23 +26,7 @@ export default function NewCurriculumModal({ onClose }) {
       const id = uuidv4()
       const now = new Date().toISOString()
 
-      // Generate video takeaways in parallel for all video lessons
-      const rawLessons = result.lessons
-      const takeawaysMap = {}
-      await Promise.all(
-        rawLessons
-          .filter(l => l.type === 'video')
-          .map(async l => {
-            try {
-              const r = await generateVideoTakeaways(l.title, level)
-              takeawaysMap[l.title] = r.keyTakeaways
-            } catch {
-              takeawaysMap[l.title] = []
-            }
-          })
-      )
-
-      const lessons = rawLessons.map((l, i) => ({
+      const lessons = result.lessons.map((l, i) => ({
         id: uuidv4(),
         type: l.type,
         title: l.title,
@@ -50,8 +34,7 @@ export default function NewCurriculumModal({ onClose }) {
         status: 'active',
         order: i,
         content: {
-          ...(l.type === 'video' ? { youtubeQuery: l.youtubeQuery, keyTakeaways: takeawaysMap[l.title] || [] } : {}),
-          ...(l.type === 'paper' ? { arxivQuery: l.arxivQuery, arxivTitle: l.arxivTitle } : {}),
+          ...(l.type === 'paper' ? { arxivQuery: l.arxivQuery, arxivTitle: l.arxivTitle, arxivId: l.arxivId } : {}),
         },
         tutorHistory: [],
         quiz: { questions: [], userAnswers: [], passed: false, attempts: 0 },

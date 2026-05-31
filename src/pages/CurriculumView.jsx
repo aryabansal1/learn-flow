@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useCurriculum } from '../context/CurriculumContext'
 import LessonSidebar from '../components/LessonSidebar'
 import ConceptLesson from '../components/lessons/ConceptLesson'
-import VideoLesson from '../components/lessons/VideoLesson'
 import PaperLesson from '../components/lessons/PaperLesson'
 import ErrorBoundary from '../components/ErrorBoundary'
 
@@ -52,7 +51,7 @@ export default function CurriculumView() {
         onSelectLesson={setActiveLessonId}
       />
 
-      <main className="flex-1 p-8 overflow-y-auto">
+      <main className={`flex-1 overflow-y-auto ${activeLesson?.type === 'paper' ? 'p-6' : 'p-8'}`}>
         <div className="mb-4">
           <button
             onClick={() => navigate('/')}
@@ -99,7 +98,6 @@ function CompletionScreen({ name }) {
 
 function LessonRenderer({ lesson, curriculum, onComplete }) {
   if (lesson.type === 'concept') return <ConceptLesson lesson={lesson} curriculum={curriculum} onComplete={onComplete} />
-  if (lesson.type === 'video') return <VideoLesson lesson={lesson} curriculum={curriculum} onComplete={onComplete} />
   if (lesson.type === 'paper') return <PaperLesson lesson={lesson} curriculum={curriculum} onComplete={onComplete} />
   return <p className="text-gray-400">Unknown lesson type: {lesson.type}</p>
 }
