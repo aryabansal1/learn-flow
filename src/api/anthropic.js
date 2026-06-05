@@ -3,7 +3,7 @@ const MODEL = 'claude-sonnet-4-20250514'
 const MAX_TOKENS = 1000
 
 function getApiKey() {
-  return import.meta.env.VITE_ANTHROPIC_API_KEY
+  return localStorage.getItem('anthropic_api_key') || import.meta.env.VITE_ANTHROPIC_API_KEY
 }
 
 function stripJsonFences(text) {
